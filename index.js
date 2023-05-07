@@ -7,8 +7,7 @@ import fileUpload from 'express-fileupload';
 import { randomUUID } from 'crypto';
 import { fileTypeFromBuffer } from 'file-type';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import * as fs from 'fs';
+import { dirname } from 'path';
 
 import pkg from 'exif';
 import { setInterval } from 'timers';
