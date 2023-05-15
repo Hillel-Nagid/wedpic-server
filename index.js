@@ -57,21 +57,18 @@ const imageGetter = async () => {
     } else {
       const imageUrls = [];
       data.Contents.forEach((obj) => {
-        console.log('heyyy');
-
         const key = obj.Key;
         s3.listObjects({ Bucket: bucketName, Prefix: key }, function (
           err,
           folderData
         ) {
           if (err) console.error(err);
-          console.log(folderData);
 
           folderData['Contents'].forEach((obj) => {
             console.log('ddddd');
             const imgKey = obj['Key'];
             const imgIndex = imgKey.indexOf('/');
-            console.log(imgIndex > -1, imgIndex.at(-1));
+            console.log(imgIndex > -1, imgIndex[imgIndex.length]);
             if (imgIndex > -1 && imgIndex.at(-1) != '/') {
               console.log('IM LOSING MY MIND');
               const imageUrl = `https://${bucketName}.s3.amazonaws.com/${imgKey}`;
