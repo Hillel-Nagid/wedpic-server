@@ -71,6 +71,7 @@ const imageGetter = async () => {
             console.log('ddddd');
             const imgKey = obj['Key'];
             const imgIndex = imgKey.indexOf('/');
+            console.log(imgKey, imgIndex);
             if (imgIndex > -1 && imgIndex.at(-1) != '/') {
               const imageUrl = `https://${bucketName}.s3.amazonaws.com/${imgKey}`;
               imageUrls.push(imageUrl);
