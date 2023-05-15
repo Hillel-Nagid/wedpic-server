@@ -69,8 +69,8 @@ const imageGetter = async () => {
 
           folderData['Contents'].forEach((obj) => {
             console.log('ddddd');
-            const imgKey = obj.Key;
-            const imgIndex = key.indexOf('/');
+            const imgKey = obj['Key'];
+            const imgIndex = imgKey.indexOf('/');
             if (imgIndex > -1 && imgIndex.at(-1) != '/') {
               const imageUrl = `https://${bucketName}.s3.amazonaws.com/${imgKey}`;
               imageUrls.push(imageUrl);
