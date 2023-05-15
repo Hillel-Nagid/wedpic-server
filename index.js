@@ -57,6 +57,8 @@ const imageGetter = async () => {
     } else {
       const imageUrls = [];
       data.Contents.forEach((obj) => {
+        console.log('heyyy');
+
         const key = obj.Key;
         s3.listObjects({ Bucket: bucketName, Prefix: key }, function (
           err,
@@ -76,6 +78,7 @@ const imageGetter = async () => {
           const imageUrl = `https://${bucketName}.s3.amazonaws.com/${key}`;
           imageUrls.push(imageUrl);
         }
+        console.log('done a round');
       });
 
       images = imageUrls;
@@ -209,8 +212,8 @@ app.put('/editTimeFrame', (req, res) => {
   }
 });
 
-app.listen(8080, () => {
-  imageGetter();
+app.listen(8080, async () => {
+  await imageGetter();
   console.log(`We're up!`);
   setInterval(imageGetter, 86400000);
 });
