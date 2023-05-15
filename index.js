@@ -81,6 +81,7 @@ const imageGetter = async () => {
       images = imageUrls;
     }
   });
+  console.log('Running');
 };
 app.get('/getImages', (req, res) => {
   try {
