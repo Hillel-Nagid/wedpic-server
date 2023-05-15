@@ -68,8 +68,8 @@ const imageGetter = async () => {
             console.log('ddddd');
             const imgKey = obj['Key'];
             const imgIndex = imgKey.indexOf('/');
-            console.log(imgIndex > -1, imgIndex[imgIndex.length]);
-            if (imgIndex > -1 && imgIndex.at(-1) != '/') {
+            console.log(imgIndex > -1, imgIndex[imgIndex.length - 1]);
+            if (imgIndex > -1 && imgIndex[imgIndex.length - 1] != '/') {
               console.log('IM LOSING MY MIND');
               const imageUrl = `https://${bucketName}.s3.amazonaws.com/${imgKey}`;
               imageUrls.push(imageUrl);
