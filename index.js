@@ -69,7 +69,7 @@ const imageGetter = async () => {
             const imgKey = obj['Key'];
             const imgIndex = imgKey.indexOf('/');
             console.log(imgIndex > -1, imgKey[imgKey.length - 1]);
-            if (imgIndex > -1 && imgKey[imgIndex.length - 1] != '/') {
+            if (imgIndex > -1 && imgKey[imgKey.length - 1] != '/') {
               console.log('IM LOSING MY MIND');
               const imageUrl = `https://${bucketName}.s3.amazonaws.com/${imgKey}`;
               imageUrls.push(imageUrl);
@@ -93,7 +93,7 @@ const imageGetter = async () => {
 };
 app.get('/getImages', (req, res) => {
   try {
-    res.send(images);
+    res.send(images.filter((str) => str[str.length - 1] != '/'));
   } catch (error) {
     res.send(error);
   }
