@@ -64,6 +64,9 @@ const imageGetter = async () => {
           err,
           folderData
         ) {
+          if (err) console.error(err);
+          console.log('hehe');
+
           folderData.Contents.forEach((obj) => {
             const imgKey = obj.Key;
             const imgIndex = key.indexOf('/');
