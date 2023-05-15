@@ -79,7 +79,7 @@ const imageGetter = async () => {
       });
 
       images = imageUrls;
-      console.log(images, imageUrls);
+      console.log(images, imageUrls, 'hey');
     }
   });
 };
