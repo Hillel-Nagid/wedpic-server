@@ -67,7 +67,8 @@ const imageGetter = async () => {
           if (err) console.error(err);
           console.log(folderData);
 
-          folderData.Contents.forEach((obj) => {
+          folderData['Contents'].forEach((obj) => {
+            console.log('ddddd');
             const imgKey = obj.Key;
             const imgIndex = key.indexOf('/');
             if (imgIndex > -1 && imgIndex.at(-1) != '/') {
