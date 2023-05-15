@@ -73,6 +73,7 @@ const imageGetter = async () => {
             const imgIndex = imgKey.indexOf('/');
             console.log(imgKey, imgIndex);
             if (imgIndex > -1 && imgIndex.at(-1) != '/') {
+              console.log('IM LOSING MY MIND');
               const imageUrl = `https://${bucketName}.s3.amazonaws.com/${imgKey}`;
               imageUrls.push(imageUrl);
             }
