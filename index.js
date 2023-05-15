@@ -211,5 +211,5 @@ app.put('/editTimeFrame', (req, res) => {
 app.listen(8080, () => {
   imageGetter();
   console.log(`We're up!`);
-  // setInterval(imageGetter, 120000);
+  setInterval(imageGetter, 86400000);
 });
