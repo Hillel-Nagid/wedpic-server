@@ -93,7 +93,7 @@ const imageGetter = async () => {
 };
 app.get('/getImages', (req, res) => {
   try {
-    res.send(images.filter((str) => str[str.length - 1] != '/'));
+    res.send([...new Set(images.filter((str) => str[str.length - 1] != '/'))]);
   } catch (error) {
     res.send(error);
   }
