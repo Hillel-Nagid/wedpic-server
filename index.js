@@ -79,7 +79,7 @@ const imageGetter = async () => {
           });
         });
         const index = key.indexOf('/');
-        if (index > -1 && key.at(-1) != '/') {
+        if (index > -1 && key[key.length - 1] != '/') {
           const imageUrl = `https://${bucketName}.s3.amazonaws.com/${key}`;
           imageUrls.push(imageUrl);
         }
