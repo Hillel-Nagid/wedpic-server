@@ -76,6 +76,7 @@ const imageGetter = async () => {
               console.log('IM LOSING MY MIND');
               const imageUrl = `https://${bucketName}.s3.amazonaws.com/${imgKey}`;
               imageUrls.push(imageUrl);
+              console.log('bb');
             }
             console.log('ddd');
           });
