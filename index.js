@@ -74,6 +74,7 @@ const imageGetter = async () => {
               const imageUrl = `https://${bucketName}.s3.amazonaws.com/${imgKey}`;
               imageUrls.push(imageUrl);
             }
+            console.log('ddd');
           });
         });
         const index = key.indexOf('/');
