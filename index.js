@@ -79,9 +79,9 @@ const imageGetter = async () => {
       });
 
       images = imageUrls;
+      console.log(images, imageUrls);
     }
   });
-  console.log(images, imageUrls);
 };
 app.get('/getImages', (req, res) => {
   try {
