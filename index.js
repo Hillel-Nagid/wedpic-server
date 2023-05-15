@@ -56,9 +56,9 @@ const imageGetter = async () => {
       console.error(err, err.stack);
     } else {
       const imageUrls = [];
-       for await (obj of data.Contents){
+      data.Contents.forEach((obj) => {
         const key = obj.Key;
-         s3.listObjects({ Bucket: bucketName, Prefix: key }, function (
+        s3.listObjects({ Bucket: bucketName, Prefix: key }, function (
           err,
           folderData
         ) {
@@ -76,13 +76,12 @@ const imageGetter = async () => {
           const imageUrl = `https://${bucketName}.s3.amazonaws.com/${key}`;
           imageUrls.push(imageUrl);
         }
-      };
+      });
 
       images = imageUrls;
     }
   });
-  console.log('Running');
-  console.log(images);
+  console.log(images, imageUrls);
 };
 app.get('/getImages', (req, res) => {
   try {
