@@ -28,197 +28,197 @@ app.use(fileUpload());
 const uri = process.env.MONGO_URI;
 
 const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverApi: ServerApiVersion.v1,
+	useNewUrlParser: true,
+	useUnifiedTopology: true,
+	serverApi: ServerApiVersion.v1,
 });
 
 client.connect((err) => {
-  console.error(err);
-  client.close();
+	console.error(err);
+	client.close();
 });
 
 const timeFramesCollection = client.db('wedpic').collection('timeframes');
 
 app.get('/getTimeFrames', async (req, res) => {
-  try {
-    const timeFrames = await timeFramesCollection.find({}).toArray();
-    res.send(timeFrames);
-  } catch (err) {
-    console.error(err);
-    req.send(err);
-  }
+	try {
+		const timeFrames = await timeFramesCollection.find({}).toArray();
+		res.send(timeFrames);
+	} catch (err) {
+		console.error(err);
+		req.send(err);
+	}
 });
 let images = [];
 const imageGetter = async () => {
-  s3.listObjects({ Bucket: bucketName }, function (err, data) {
-    if (err) {
-      console.error(err, err.stack);
-    } else {
-      const imageUrls = [];
-      data.Contents.forEach((obj) => {
-        const key = obj.Key;
-        s3.listObjects({ Bucket: bucketName, Prefix: key }, function (
-          err,
-          folderData
-        ) {
-          if (err) console.error(err);
+	s3.listObjects({ Bucket: bucketName }, function (err, data) {
+		if (err) {
+			console.error(err, err.stack);
+		} else {
+			const imageUrls = [];
+			data.Contents.forEach((obj) => {
+				const key = obj.Key;
+				s3.listObjects({ Bucket: bucketName, Prefix: key }, function (
+					err,
+					folderData
+				) {
+					if (err) console.error(err);
 
-          folderData['Contents'].forEach((obj) => {
-            console.log('ddddd');
-            const imgKey = obj['Key'];
-            const imgIndex = imgKey.indexOf('/');
-            console.log(imgIndex > -1, imgKey[imgKey.length - 1]);
-            if (imgIndex > -1 && imgKey[imgKey.length - 1] != '/') {
-              console.log('IM LOSING MY MIND');
-              const imageUrl = `https://${bucketName}.s3.amazonaws.com/${imgKey}`;
-              imageUrls.push(imageUrl);
-              console.log('bb');
-            }
-            console.log('ddd');
-          });
-        });
-        const index = key.indexOf('/');
-        if (index > -1 && key[key.length - 1] != '/') {
-          const imageUrl = `https://${bucketName}.s3.amazonaws.com/${key}`;
-          imageUrls.push(imageUrl);
-        }
-        console.log('done a round');
-      });
+					folderData['Contents'].forEach((obj) => {
+						console.log('ddddd');
+						const imgKey = obj['Key'];
+						const imgIndex = imgKey.indexOf('/');
+						console.log(imgIndex > -1, imgKey[imgKey.length - 1]);
+						if (imgIndex > -1 && imgKey[imgKey.length - 1] != '/') {
+							console.log('IM LOSING MY MIND');
+							const imageUrl = `https://${bucketName}.s3.amazonaws.com/${imgKey}`;
+							imageUrls.push(imageUrl);
+							console.log('bb');
+						}
+						console.log('ddd');
+					});
+				});
+				const index = key.indexOf('/');
+				if (index > -1 && key[key.length - 1] != '/') {
+					const imageUrl = `https://${bucketName}.s3.amazonaws.com/${key}`;
+					imageUrls.push(imageUrl);
+				}
+				console.log('done a round');
+			});
 
-      images = imageUrls;
-      console.log(images, imageUrls, 'hey');
-    }
-  });
+			images = imageUrls;
+			console.log(images, imageUrls, 'hey');
+		}
+	});
 };
 app.get('/getImages', (req, res) => {
-  try {
-    res.send([...new Set(images.filter((str) => str[str.length - 1] != '/'))]);
-  } catch (error) {
-    res.send(error);
-  }
+	try {
+		res.send([...new Set(images.filter((str) => str[str.length - 1] != '/'))]);
+	} catch (error) {
+		res.send(error);
+	}
 });
 
 app.post('/addImages', (req, res) => {
-  try {
-    const saveImg = async (img) => {
-      const fileType = await fileTypeFromBuffer(img.data);
-      let subfolder = '';
-      new ExifImage({ image: img.data }, async (err, metadata) => {
-        if (err) console.error(err);
-        else {
-          try {
-            await timeFramesCollection.find({}).forEach((timeFrame) => {
-              const dateAndTime = metadata.exif.DateTimeOriginal;
-              if (dateAndTime) {
-                const splitDaT = dateAndTime.split(' ');
-                const date = splitDaT[0].replace(':', '/').replace(':', '/');
-                const time = splitDaT[1];
-                const timeFrameStarts = new Date(parseInt(timeFrame.startTime));
-                const timeFrameEnds = new Date(parseInt(timeFrame.endTime));
-                const imgTakenAt = new Date(date + ' ' + time);
-                imgTakenAt.setFullYear(timeFrameStarts.getFullYear());
-                imgTakenAt.setMonth(timeFrameStarts.getMonth());
-                imgTakenAt.setDate(timeFrameStarts.getDate());
-                if (
-                  imgTakenAt >= timeFrameStarts &&
-                  imgTakenAt < timeFrameEnds
-                ) {
-                  subfolder = timeFrame.name;
-                } else {
-                  subfolder = 'other';
-                }
-              } else {
-                subfolder = 'other';
-              }
-            });
-          } catch (err) {
-            console.error(err);
-          }
-        }
+	try {
+		const saveImg = async (img) => {
+			const fileType = await fileTypeFromBuffer(img.data);
+			let subfolder = '';
+			new ExifImage({ image: img.data }, async (err, metadata) => {
+				if (err) console.error(err);
+				else {
+					try {
+						await timeFramesCollection.find({}).forEach((timeFrame) => {
+							const dateAndTime = metadata.exif.DateTimeOriginal;
+							if (dateAndTime) {
+								const splitDaT = dateAndTime.split(' ');
+								const date = splitDaT[0].replace(':', '/').replace(':', '/');
+								const time = splitDaT[1];
+								const timeFrameStarts = new Date(parseInt(timeFrame.startTime));
+								const timeFrameEnds = new Date(parseInt(timeFrame.endTime));
+								const imgTakenAt = new Date(date + ' ' + time);
+								imgTakenAt.setFullYear(timeFrameStarts.getFullYear());
+								imgTakenAt.setMonth(timeFrameStarts.getMonth());
+								imgTakenAt.setDate(timeFrameStarts.getDate());
+								if (
+									imgTakenAt >= timeFrameStarts &&
+									imgTakenAt < timeFrameEnds
+								) {
+									subfolder = timeFrame.name;
+								} else {
+									subfolder = 'other';
+								}
+							} else {
+								subfolder = 'other';
+							}
+						});
+					} catch (err) {
+						console.error(err);
+					}
+				}
 
-        if (subfolder) {
-          const uuid = randomUUID();
-          s3.headObject(
-            { Bucket: bucketName, Key: subfolder + '/' },
-            (err, data) => {
-              if (err) {
-                console.log(err['$metadata'].httpStatusCode);
-                if (err['$metadata'].httpStatusCode == 404) {
-                  s3.putObject(
-                    { Bucket: bucketName, Key: subfolder + '/' },
-                    (err, data) => {
-                      if (err) {
-                        console.error(err);
-                      } else {
-                        console.log(
-                          `Folder created successfully. Folder name: ${folderName}`
-                        );
-                        // Upload file to the newly created folder
-                        uploadFileToS3();
-                      }
-                    }
-                  );
-                } else {
-                  console.error(err);
-                }
-              } else {
-                uploadFileToS3();
-              }
-            }
-          );
-          const uploadFileToS3 = async () => {
-            console.log(img.data);
-            const params = {
-              Bucket: bucketName,
-              Key: `${subfolder}/${uuid + '.' + fileType.ext}`,
-              Body: img.data,
-              ContentType: `image/${fileType.ext}`,
-            };
-            try {
-              await new Upload({
-                client: s3,
-                params,
-              })
-                .done()
-                .then((data) => {
-                  console.log(
-                    `File uploaded successfully. File location: ${data.Location}`
-                  );
-                });
-            } catch (err) {
-              console.error(err);
-            }
-          };
-        }
-      });
-    };
-    if (Array.isArray(req.files.files)) {
-      req.files.files.forEach(saveImg);
-    } else {
-      saveImg(req.files.files);
-    }
-    res.send('👍');
-  } catch (error) {
-    res.status(400).send(error);
-  }
+				if (subfolder) {
+					const uuid = randomUUID();
+					s3.headObject(
+						{ Bucket: bucketName, Key: subfolder + '/' },
+						(err, data) => {
+							if (err) {
+								console.log(err['$metadata'].httpStatusCode);
+								if (err['$metadata'].httpStatusCode == 404) {
+									s3.putObject(
+										{ Bucket: bucketName, Key: subfolder + '/' },
+										(err, data) => {
+											if (err) {
+												console.error(err);
+											} else {
+												console.log(
+													`Folder created successfully. Folder name: ${folderName}`
+												);
+												// Upload file to the newly created folder
+												uploadFileToS3();
+											}
+										}
+									);
+								} else {
+									console.error(err);
+								}
+							} else {
+								uploadFileToS3();
+							}
+						}
+					);
+					const uploadFileToS3 = async () => {
+						console.log(img.data);
+						const params = {
+							Bucket: bucketName,
+							Key: `${subfolder}/${uuid + '.' + fileType.ext}`,
+							Body: img.data,
+							ContentType: `image/${fileType.ext}`,
+						};
+						try {
+							await new Upload({
+								client: s3,
+								params,
+							})
+								.done()
+								.then((data) => {
+									console.log(
+										`File uploaded successfully. File location: ${data.Location}`
+									);
+								});
+						} catch (err) {
+							console.error(err);
+						}
+					};
+				}
+			});
+		};
+		if (Array.isArray(req.files.files)) {
+			req.files.files.forEach(saveImg);
+		} else {
+			saveImg(req.files.files);
+		}
+		res.send('👍');
+	} catch (error) {
+		res.status(400).send(error);
+	}
 });
 
 app.put('/editTimeFrame', (req, res) => {
-  const { _id, change } = req.body;
-  try {
-    const result = timeFramesCollection.updateOne(
-      { _id: new ObjectId(_id) },
-      { $set: change }
-    );
-    res.send(result);
-  } catch (error) {
-    res.send(req.body);
-  }
+	const { _id, change } = req.body;
+	try {
+		const result = timeFramesCollection.updateOne(
+			{ _id: new ObjectId(_id) },
+			{ $set: change }
+		);
+		res.send(result);
+	} catch (error) {
+		res.send(req.body);
+	}
 });
 
 app.listen(8080, async () => {
-  await imageGetter();
-  console.log(`We're up!`);
-  setInterval(imageGetter, 86400000);
+	await imageGetter();
+	console.log(`We're up!`);
+	setInterval(imageGetter, 300000);
 });
