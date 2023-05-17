@@ -220,5 +220,5 @@ app.put('/editTimeFrame', (req, res) => {
 app.listen(8080, async () => {
   await imageGetter();
   console.log(`We're up!`);
-  setInterval(imageGetter, 3600000);
+  setInterval(imageGetter, 120000);
 });
